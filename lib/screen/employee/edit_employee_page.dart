@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/bloc/department_bloc.dart';
 import 'package:flutter_application_1/bloc/employee_bloc.dart';
 import 'package:flutter_application_1/drift_database.dart';
+import 'package:flutter_application_1/service/file_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
 class EditEmployeePage extends StatefulWidget {
@@ -29,7 +29,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   late TextEditingController _notesController;
   int? _selectedDepartmentId;
   String? _filePath;
-
+  final FileService _fileService = FileService();
   @override
   void initState() {
     super.initState();
@@ -46,27 +46,11 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   }
 
   Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf'],
-    );
-    if (result != null) {
-      final file = File(result.files.single.path!);
-      final appDir = await getApplicationDocumentsDirectory();
-      final fileName = path.basename(file.path);
-      final savedFile = await file.copy('${appDir.path}/$fileName');
+    final filePath = await _fileService.pickFile();
+    if (filePath != null) {
       setState(() {
-        _filePath = savedFile.path;
+        _filePath = filePath;
       });
-
-      // Delete old file
-      if (widget.employee.filePath != null &&
-          widget.employee.filePath!.isNotEmpty) {
-        final oldFile = File(widget.employee.filePath!);
-        if (await oldFile.exists()) {
-          await oldFile.delete();
-        }
-      }
     }
   }
 
@@ -143,7 +127,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
                         },
                         validator: (value) {
                           if (value == null) {
-                            return 'الرجاء اختيار القسم';
+                            return 'الرجاء اختيار قسم';
                           }
                           return null;
                         },
@@ -167,15 +151,13 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: _pickFile,
-                  child: Text(_filePath == null
-                      ? 'Upload File'
-                      : 'File Selected: ${path.basename(_filePath!)}'),
+                  child: Text(_filePath == null ? 'رفع ملف' : 'ملف مختار'),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      final employee = EmployeesCompanion(
+                      var updatedEmployee = EmployeesCompanion(
                         id: drift.Value(widget.employee.id),
                         fullName: drift.Value(_nameController.text),
                         statisticalNumber: drift.Value(
@@ -186,16 +168,24 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
                         subject: drift.Value(_subjectController.text),
                         status: drift.Value(_statusController.text),
                         notes: drift.Value(_notesController.text),
-                        filePath: drift.Value(_filePath ?? ''),
-                        lastUpdate: drift.Value(DateTime.now()),
+                        filePath: drift.Value(''),
                       );
+
+                      if (_filePath != null) {
+                        final savedFilePath = await _fileService.saveFile(
+                            _filePath!, widget.employee.id);
+                        await _fileService.deleteFile(widget.employee.filePath);
+                        updatedEmployee = updatedEmployee.copyWith(
+                            filePath: drift.Value(savedFilePath));
+                      }
+
                       context
                           .read<EmployeeBloc>()
-                          .add(UpdateEmployee(employee));
+                          .add(UpdateEmployee(updatedEmployee));
                       Navigator.pop(context);
                     }
                   },
-                  child: const Text('Save Changes'),
+                  child: const Text('تعديل الموظف'),
                 ),
               ],
             ),

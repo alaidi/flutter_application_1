@@ -7,6 +7,7 @@ import 'package:flutter_application_1/screen/employee/employees_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_application_1/bloc/department_bloc.dart';
 import 'package:flutter_application_1/bloc/employee_bloc.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -55,13 +56,19 @@ class DashboardPage extends StatelessWidget {
     }
   }
 
-  void _showPdfFolder(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('خطا في الحفظ '),
-        backgroundColor: Colors.red,
-      ),
-    );
+  void _showPdfFolder(BuildContext context) async {
+    final newPath = p.join(Directory.current.path);
+    try {
+      await OpenFile.open('$newPath\\');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('خطا في  $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+
     // Implement your logic to show PDF folder here
     print('Show PDF folder clicked');
   }

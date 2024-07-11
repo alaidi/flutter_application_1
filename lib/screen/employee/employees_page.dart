@@ -1,8 +1,7 @@
-import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/bloc/employee_bloc.dart';
-import 'package:flutter_application_1/drift_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:open_file/open_file.dart';
 import 'add_employee_page.dart';
 import 'edit_employee_page.dart';
 
@@ -16,6 +15,18 @@ class EmployeesPage extends StatefulWidget {
 
 class _EmployeesPageState extends State<EmployeesPage> {
   String _searchQuery = '';
+  void _openFile(BuildContext context, String filePath) async {
+    final result = await OpenFile.open(filePath);
+
+    if (result.type != ResultType.done) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('خطأ في فتح الملف'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,8 +85,29 @@ class _EmployeesPageState extends State<EmployeesPage> {
                                 Text('الماده: ${employee.subject}'),
                                 Text('الحاله: ${employee.status}'),
                                 Text('الملاحظات: ${employee.notes ?? ''}'),
-                                if (employee.filePath != null)
-                                  Text('الملف: ${employee.filePath}'),
+                                if (employee.filePath != null) ...[
+                                  const SizedBox(height: 16.0),
+                                  GestureDetector(
+                                    onTap: () =>
+                                        _openFile(context, employee.filePath!),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.file_open),
+                                        const SizedBox(width: 8.0),
+                                        Expanded(
+                                          child: Text(
+                                            'الملف: ${employee.filePath}',
+                                            style: const TextStyle(
+                                              color: Colors.blue,
+                                              decoration:
+                                                  TextDecoration.underline,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
                             trailing: Row(
@@ -126,34 +158,34 @@ class _EmployeesPageState extends State<EmployeesPage> {
               child: const Text('إضافة موظف'),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                final employeeBloc = context.read<EmployeeBloc>();
-                for (int i = 0; i < 1; i++) {
-                  final employee = EmployeesCompanion.insert(
-                    fullName: 'موظف $i',
-                    statisticalNumber: i,
-                    rank: 'رتبه $i',
-                    position: 'منصب $i',
-                    departmentId: 1, // Replace with a valid department ID
-                    subject: 'ماده $i',
-                    status: 'الحاله $i',
-                    notes: drift.Value('ملاحظات $i'),
-                    lastUpdate: drift.Value(DateTime.now()),
-                  );
-                  employeeBloc.add(AddEmployee(employee));
-                }
+          // Padding(
+          //   padding: const EdgeInsets.all(16.0),
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       final employeeBloc = context.read<EmployeeBloc>();
+          //       for (int i = 0; i < 1; i++) {
+          //         final employee = EmployeesCompanion.insert(
+          //           fullName: 'موظف $i',
+          //           statisticalNumber: i,
+          //           rank: 'رتبه $i',
+          //           position: 'منصب $i',
+          //           departmentId: 1, // Replace with a valid department ID
+          //           subject: 'ماده $i',
+          //           status: 'الحاله $i',
+          //           notes: drift.Value('ملاحظات $i'),
+          //           lastUpdate: drift.Value(DateTime.now()),
+          //         );
+          //         employeeBloc.add(AddEmployee(employee));
+          //       }
 
-                // Show a confirmation message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('100 موظف أضيفوا')),
-                );
-              },
-              child: const Text('إضافة 100 موظف'),
-            ),
-          ),
+          //       // Show a confirmation message
+          //       ScaffoldMessenger.of(context).showSnackBar(
+          //         const SnackBar(content: Text('100 موظف أضيفوا')),
+          //       );
+          //     },
+          //     child: const Text('إضافة 100 موظف'),
+          //   ),
+          // ),
         ],
       ),
     );

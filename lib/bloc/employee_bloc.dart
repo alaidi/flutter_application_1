@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_application_1/drift_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -5,8 +6,9 @@ class EmployeeEvent {}
 
 class AddEmployee extends EmployeeEvent {
   final EmployeesCompanion employee;
+  final Completer<int> completer;
 
-  AddEmployee(this.employee);
+  AddEmployee(this.employee, this.completer);
   List<Object> get props => [employee];
 }
 
@@ -47,7 +49,8 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
 
   EmployeeBloc(this.database) : super(EmployeeLoaded([])) {
     on<AddEmployee>((event, emit) async {
-      await database.into(database.employees).insert(event.employee);
+      final id = await database.into(database.employees).insert(event.employee);
+      event.completer.complete(id);
       add(FetchEmployees());
     });
 

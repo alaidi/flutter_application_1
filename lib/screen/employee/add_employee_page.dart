@@ -1,12 +1,13 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/bloc/department_bloc.dart';
 import 'package:flutter_application_1/bloc/employee_bloc.dart';
 import 'package:flutter_application_1/drift_database.dart';
+import 'package:flutter_application_1/service/file_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
 class AddEmployeePage extends StatefulWidget {
@@ -28,17 +29,12 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
 
   int? _selectedDepartmentId;
   String? _filePath;
-
+  final FileService _fileService = FileService();
   Future<void> _pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-      final file = File(result.files.single.path!);
-      final appDir = await getApplicationDocumentsDirectory();
-      final fileName = path.basename(file.path);
-      final savedFile = await file.copy('${appDir.path}/$fileName');
-      print(savedFile.path);
+    final filePath = await _fileService.pickFile();
+    if (filePath != null) {
       setState(() {
-        _filePath = savedFile.path;
+        _filePath = filePath;
       });
     }
   }
@@ -47,7 +43,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Employee'),
+        title: const Text('إضافة موظف'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -61,7 +57,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                   decoration: const InputDecoration(labelText: 'الاسم الثلاثي'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter full name';
+                      return 'الرجاء إدخال الاسم الثلاثي';
                     }
                     return null;
                   },
@@ -72,7 +68,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                       const InputDecoration(labelText: 'الرقم الاحصائي'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter statistical number';
+                      return 'الرجاء إدخال الرقم الاحصائي';
                     }
                     return null;
                   },
@@ -104,7 +100,7 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                         },
                         validator: (value) {
                           if (value == null) {
-                            return 'Please select a department';
+                            return 'الرجاء اختيار قسم';
                           }
                           return null;
                         },
@@ -123,35 +119,50 @@ class _AddEmployeePageState extends State<AddEmployeePage> {
                 ),
                 TextFormField(
                   controller: _notesController,
-                  decoration: const InputDecoration(labelText: 'الملاحضات'),
+                  decoration: const InputDecoration(labelText: 'الملاحظات'),
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: _pickFile,
-                  child:
-                      Text(_filePath == null ? 'Upload File' : 'File Selected'),
+                  child: Text(_filePath == null ? 'رفع ملف' : 'ملف مختار'),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      final employee = EmployeesCompanion(
-                          fullName: drift.Value(_nameController.text),
-                          statisticalNumber: drift.Value(
-                              int.parse(_statisticalNumberController.text)),
-                          rank: drift.Value(_rankController.text),
-                          position: drift.Value(_positionController.text),
-                          departmentId: drift.Value(_selectedDepartmentId!),
-                          subject: drift.Value(_subjectController.text),
-                          status: drift.Value(_statusController.text),
-                          notes: drift.Value(_notesController.text),
-                          filePath: drift.Value(_filePath ?? ''),
-                          lastUpdate: drift.Value(DateTime.now()));
-                      context.read<EmployeeBloc>().add(AddEmployee(employee));
+                      var employee = EmployeesCompanion(
+                        fullName: drift.Value(_nameController.text),
+                        statisticalNumber: drift.Value(
+                            int.parse(_statisticalNumberController.text)),
+                        rank: drift.Value(_rankController.text),
+                        position: drift.Value(_positionController.text),
+                        departmentId: drift.Value(_selectedDepartmentId!),
+                        subject: drift.Value(_subjectController.text),
+                        status: drift.Value(_statusController.text),
+                        notes: drift.Value(_notesController.text),
+                        filePath: drift.Value(''),
+                      );
+                      final completer = Completer<int>();
+                      context
+                          .read<EmployeeBloc>()
+                          .add(AddEmployee(employee, completer));
+                      final id = await completer.future;
+                      final newFileName =
+                          '${id}_${DateTime.now().toIso8601String()}.pdf';
+
+                      if (_filePath != null) {
+                        final savedFilePath =
+                            await _fileService.saveFile(_filePath!, id);
+                        final updatedEmployee = employee.copyWith(
+                            filePath: drift.Value(savedFilePath));
+                        context
+                            .read<EmployeeBloc>()
+                            .add(UpdateEmployee(updatedEmployee));
+                      }
                       Navigator.pop(context);
                     }
                   },
-                  child: const Text('Add Employee'),
+                  child: const Text('إضافة موظف'),
                 ),
               ],
             ),
