@@ -1,13 +1,10 @@
-import 'dart:io';
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/bloc/department_bloc.dart';
-import 'package:flutter_application_1/bloc/employee_bloc.dart';
-import 'package:flutter_application_1/drift_database.dart';
-import 'package:flutter_application_1/service/file_service.dart';
+import 'package:employee_app/bloc/department_bloc.dart';
+import 'package:employee_app/bloc/employee_bloc.dart';
+import 'package:employee_app/drift_database.dart';
+import 'package:employee_app/service/file_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:path/path.dart' as path;
 
 class EditEmployeePage extends StatefulWidget {
   final Employee employee;
@@ -168,16 +165,16 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
                         subject: drift.Value(_subjectController.text),
                         status: drift.Value(_statusController.text),
                         notes: drift.Value(_notesController.text),
-                        filePath: drift.Value(''),
+                        filePath: drift.Value(_filePath),
                       );
 
-                      if (_filePath != null) {
-                        final savedFilePath = await _fileService.saveFile(
-                            _filePath!, widget.employee.id);
-                        await _fileService.deleteFile(widget.employee.filePath);
-                        updatedEmployee = updatedEmployee.copyWith(
-                            filePath: drift.Value(savedFilePath));
-                      }
+                      // if (_filePath != null) {
+                      //   final savedFilePath = await _fileService.saveFile(
+                      //       _filePath!, widget.employee.id);
+                      //   await _fileService.deleteFile(widget.employee.filePath);
+                      //   updatedEmployee = updatedEmployee.copyWith(
+                      //       filePath: drift.Value(savedFilePath));
+                      // }
 
                       context
                           .read<EmployeeBloc>()

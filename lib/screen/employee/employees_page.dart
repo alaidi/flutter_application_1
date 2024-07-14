@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/bloc/employee_bloc.dart';
+import 'package:employee_app/bloc/employee_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_file/open_file.dart';
 import 'add_employee_page.dart';

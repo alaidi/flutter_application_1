@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/bloc/department_bloc.dart';
-import 'package:flutter_application_1/drift_database.dart';
-import 'package:flutter_application_1/screen/department/edit_department_page.dart';
+import 'package:employee_app/bloc/department_bloc.dart';
+import 'package:employee_app/screen/department/edit_department_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'add_department_page.dart';
 
@@ -19,7 +18,7 @@ class _DepartmentsPageState extends State<DepartmentsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Departments'),
+        title: const Text('الاقسام'),
       ),
       body: Column(
         children: [
@@ -32,7 +31,7 @@ class _DepartmentsPageState extends State<DepartmentsPage> {
                 });
               },
               decoration: const InputDecoration(
-                labelText: 'Search',
+                labelText: 'بحث',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -98,28 +97,28 @@ class _DepartmentsPageState extends State<DepartmentsPage> {
                       builder: (context) => const AddDepartmentPage()),
                 );
               },
-              child: const Text('Add Department'),
+              child: const Text('اضافة قسم'),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                final departmentBloc = context.read<DepartmentBloc>();
-                for (int i = 0; i < 1000; i++) {
-                  final department =
-                      DepartmentsCompanion.insert(name: 'Department $i');
-                  departmentBloc.add(AddDepartment(department));
-                }
+          // Padding(
+          //   padding: const EdgeInsets.all(16.0),
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       final departmentBloc = context.read<DepartmentBloc>();
+          //       for (int i = 0; i < 1000; i++) {
+          //         final department =
+          //             DepartmentsCompanion.insert(name: 'Department $i');
+          //         departmentBloc.add(AddDepartment(department));
+          //       }
 
-                // Show a confirmation message
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('1000 departments added')),
-                );
-              },
-              child: const Text('Add 1000 Departments'),
-            ),
-          ),
+          //       // Show a confirmation message
+          //       ScaffoldMessenger.of(context).showSnackBar(
+          //         const SnackBar(content: Text('1000 departments added')),
+          //       );
+          //     },
+          //     child: const Text('Add 1000 Departments'),
+          //   ),
+          // ),
         ],
       ),
     );

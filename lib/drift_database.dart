@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 
 part 'drift_database.g.dart';
 
@@ -26,11 +27,23 @@ class AppDatabase extends _$AppDatabase {
 //       );
 }
 
+Future<void> _initializeDirectories(Directory pdfDir) async {
+  // final Directory appDir = Directory.current;
+//  final pdfDir = Directory(path.join(appDir.path, 'data'));
+
+  if (!await pdfDir.exists()) {
+    await pdfDir.create(recursive: true);
+  }
+}
+
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'db.sqlite'));
-    print(file.path);
+    final Directory appDir = Directory.current;
+    final pdfDir = Directory(path.join(appDir.path, 'data'));
+
+    await _initializeDirectories(pdfDir);
+    //  final dbFolder = await getApplicationDocumentsDirectory();
+    final file = File(p.join(pdfDir.path, 'db.sqlite'));
     return NativeDatabase(file);
   });
 }

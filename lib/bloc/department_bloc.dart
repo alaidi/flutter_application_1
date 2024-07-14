@@ -1,5 +1,5 @@
 // department_bloc.dart
-import 'package:flutter_application_1/drift_database.dart';
+import 'package:employee_app/drift_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DepartmentEvent {}

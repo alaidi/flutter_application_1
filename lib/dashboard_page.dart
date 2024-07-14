@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screen/department/departments_page.dart';
-import 'package:flutter_application_1/screen/employee/employees_page.dart';
+import 'package:employee_app/screen/department/departments_page.dart';
+import 'package:employee_app/screen/employee/employees_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_application_1/bloc/department_bloc.dart';
-import 'package:flutter_application_1/bloc/employee_bloc.dart';
+import 'package:employee_app/bloc/department_bloc.dart';
+import 'package:employee_app/bloc/employee_bloc.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;

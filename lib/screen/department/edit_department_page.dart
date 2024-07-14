@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/bloc/department_bloc.dart';
-import 'package:flutter_application_1/drift_database.dart';
+import 'package:employee_app/bloc/department_bloc.dart';
+import 'package:employee_app/drift_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EditDepartmentPage extends StatefulWidget {
@@ -33,7 +33,7 @@ class _EditDepartmentPageState extends State<EditDepartmentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Department'),
+        title: const Text('تعديل قسم'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -43,10 +43,10 @@ class _EditDepartmentPageState extends State<EditDepartmentPage> {
             children: <Widget>[
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(labelText: 'الاسم'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter department name';
+                    return 'الرجاء ادخال اسم القسم';
                   }
                   return null;
                 },
@@ -65,7 +65,7 @@ class _EditDepartmentPageState extends State<EditDepartmentPage> {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text('Update Department'),
+                child: const Text('تحديث'),
               ),
             ],
           ),

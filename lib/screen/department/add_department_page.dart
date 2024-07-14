@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/bloc/department_bloc.dart';
-import 'package:flutter_application_1/drift_database.dart';
+import 'package:employee_app/bloc/department_bloc.dart';
+import 'package:employee_app/drift_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddDepartmentPage extends StatefulWidget {
@@ -14,13 +14,13 @@ class AddDepartmentPage extends StatefulWidget {
 class _AddDepartmentPageState extends State<AddDepartmentPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  // final _descriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Department'),
+        title: const Text('اضافة قسم'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -30,18 +30,18 @@ class _AddDepartmentPageState extends State<AddDepartmentPage> {
             children: <Widget>[
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Department Name'),
+                decoration: const InputDecoration(labelText: 'اسم القسم'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter department name';
+                    return 'الرجاء كتابة اسم القسم';
                   }
                   return null;
                 },
               ),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
-              ),
+              // TextFormField(
+              //   controller: _descriptionController,
+              //   decoration: const InputDecoration(labelText: 'Description'),
+              // ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
@@ -56,7 +56,7 @@ class _AddDepartmentPageState extends State<AddDepartmentPage> {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text('Add Department'),
+                child: const Text('حفظ'),
               ),
             ],
           ),
@@ -68,7 +68,7 @@ class _AddDepartmentPageState extends State<AddDepartmentPage> {
   @override
   void dispose() {
     _nameController.dispose();
-    _descriptionController.dispose();
+    // _descriptionController.dispose();
     super.dispose();
   }
 }
