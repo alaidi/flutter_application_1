@@ -1,18 +1,20 @@
 import 'dart:io';
+import 'package:employee_app/config.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 
 class FileService {
+  final Config _config = Config();
   late final Directory appDir;
 
-  FileService() {
-    _loadConfig();
-  }
+  // FileService() {
+  //   _loadConfig();
+  // }
 
-  void _loadConfig() {
-    appDir = Directory.current;
-  }
+  // void _loadConfig() {
+  //   appDir = Directory.current;
+  // }
 
   Future<String?> pickFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -28,14 +30,14 @@ class FileService {
   Future<String> saveFile(String filePath, int employeeId) async {
     final file = File(filePath);
     final fileName = '${employeeId}_${const Uuid().v4()}.pdf';
-    final pdfDir =
-        Directory(path.join(appDir.path, 'pdf', employeeId.toString()));
+    final employeePdfDir =
+        Directory(path.join(_config.pdfDir.path, employeeId.toString()));
 
-    if (!await pdfDir.exists()) {
-      await pdfDir.create(recursive: true);
+    if (!await employeePdfDir.exists()) {
+      await employeePdfDir.create(recursive: true);
     }
 
-    final savedFile = await file.copy(path.join(pdfDir.path, fileName));
+    final savedFile = await file.copy(path.join(employeePdfDir.path, fileName));
     return savedFile.path;
   }
 

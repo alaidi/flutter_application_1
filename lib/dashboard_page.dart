@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:employee_app/config.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:employee_app/screen/department/departments_page.dart';
@@ -9,21 +10,23 @@ import 'package:employee_app/bloc/department_bloc.dart';
 import 'package:employee_app/bloc/employee_bloc.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage({super.key});
+  DashboardPage({super.key});
+  final config = Config();
   Future<void> _backupDatabase(BuildContext context) async {
     try {
       // Get the directory containing the database file
-      final dbFolder = await getApplicationDocumentsDirectory();
-      final dbFile = File(p.join(dbFolder.path, 'db.sqlite'));
-
+      // final dbFolder = await getApplicationDocumentsDirectory();
+      // final dbFile = File(p.join(dbFolder.path, 'db.sqlite'));
+      final dbFile = File(path.join(config.dataDir.path, 'db.sqlite'));
       // Open file picker to select directory for backup
       String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
 
       if (selectedDirectory != null) {
-        final backupFile = File(p.join(selectedDirectory, 'db_backup.sqlite'));
+        final backupFile =
+            File(path.join(selectedDirectory, 'db_backup.sqlite'));
 
         // Copy the database file to the backup location
         await dbFile.copy(backupFile.path);
@@ -57,9 +60,10 @@ class DashboardPage extends StatelessWidget {
   }
 
   void _showPdfFolder(BuildContext context) async {
-    final newPath = p.join(Directory.current.path);
+    final pdfPath = config.pdfDir.path;
+
     try {
-      await OpenFile.open('$newPath\\');
+      await OpenFile.open('$pdfPath\\');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

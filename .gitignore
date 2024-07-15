@@ -43,3 +43,5 @@ app.*.map.json
 /android/app/release
 pdf/*
 data/*
+installer/EmployeeApp.exe
+installer/VC_redist.x64.exe

@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         // Home page
-        home: const DashboardPage(),
+        home: DashboardPage(),
         // Routes for navigation
         routes: {
           EmployeesPage.routeName: (context) => const EmployeesPage(),
